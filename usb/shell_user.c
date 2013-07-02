@@ -66,6 +66,7 @@ static void cmd_threads(BaseSequentialStream *chp, int argc, char *argv[])
 
 extern BaseSequentialStream * stream;
 extern BinarySemaphore semaphore;
+extern uint16_t speed;
 
 static void cmd_read(BaseSequentialStream *chp, int argc, char *argv[])
 {
@@ -81,10 +82,25 @@ static void cmd_stop(BaseSequentialStream *chp, int argc, char *argv[])
 	palClearPad(GPIOD,14);
 }
 
+static void cmd_speed(BaseSequentialStream *chp, int argc, char *argv[])
+{
+	uint16_t temp;
+
+	if (argc != 1)
+		return;
+
+	temp = atoi(argv[0]);
+	if (temp < 2)
+		return;
+
+	speed = temp;
+}
+
 const ShellCommand commands[] =
 {
 { "mem", cmd_mem },
 { "threads", cmd_threads },
 { "start", cmd_read },
 { "stop", cmd_stop },
+{ "speed" , cmd_speed},
 { NULL, NULL } };

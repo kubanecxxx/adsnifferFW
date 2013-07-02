@@ -12,6 +12,8 @@
 
 BaseSequentialStream * stream = NULL;
 BSEMAPHORE_DECL(semaphore,TRUE);
+uint16_t speed = 50;
+
 
 static void adccb(ADCDriver *adcp, adcsample_t *buffer, size_t n);
 /* Total number of channels to be sampled by a single ADC operation.*/
@@ -91,6 +93,7 @@ sampler::sampler() :
 
 msg_t sampler::Main(void)
 {
+	uint16_t digital;
 	while (TRUE)
 	{
 
@@ -100,11 +103,17 @@ msg_t sampler::Main(void)
 			{
 				chprintf(stream,"%d ",Samples[i]);
 			}
+
+			digital = palReadGroup(GPIOE,0b11111,2);
+			digital |= palReadGroup(GPIOC,0b111,13) << 5;
+
+			chprintf(stream,"%d",digital);
+
 			chprintf(stream, "\n\r");
 			adcStartConversion(&ADCD1, &adcgrpcfg, samples, ADC_GRP1_BUF_DEPTH);
 			palTogglePad(GPIOD,13);
 		}
 
-		chThdSleepMilliseconds(100);
+		chThdSleepMilliseconds(speed);
 	}
 }
